@@ -192,23 +192,20 @@ echo Telechargement de Sodium NeoForge...
 powershell -Command "try { Invoke-WebRequest -Uri 'https://cdn.modrinth.com/data/AANobbMI/versions/Pb3OXVqC/sodium-neoforge-0.6.13%%2Bmc1.21.1.jar' -OutFile '%MINECRAFT_MODS%\sodium-neoforge-0.6.13+mc1.21.1.jar' -ErrorAction Stop; Write-Host 'Sodium NeoForge telecharge avec succes' -ForegroundColor Green } catch { Write-Host 'Erreur lors du telechargement de Sodium: ' $_.Exception.Message -ForegroundColor Red }"
 
 REM Télécharger Iris NeoForge si l'utilisateur a choisi les shaders
-if /i "!shaderChoice!" equ "o" (
-    echo Telechargement de Iris NeoForge...
-    powershell -Command "try { Invoke-WebRequest -Uri 'https://cdn.modrinth.com/data/YL57xq9U/versions/t3ruzodq/iris-neoforge-1.8.12%%2Bmc1.21.1.jar' -OutFile '%MINECRAFT_MODS%\iris-neoforge-1.8.12+mc1.21.1.jar' -ErrorAction Stop; Write-Host 'Iris NeoForge telecharge avec succes' -ForegroundColor Green } catch { Write-Host 'Erreur lors du telechargement de Iris: ' $_.Exception.Message -ForegroundColor Red }"
-) else (
-    echo Installation d'Iris ignoree - shaders non souhaites.
-)
+
+echo Telechargement de Iris NeoForge...
+powershell -Command "try { Invoke-WebRequest -Uri 'https://cdn.modrinth.com/data/YL57xq9U/versions/t3ruzodq/iris-neoforge-1.8.12%%2Bmc1.21.1.jar' -OutFile '%MINECRAFT_MODS%\iris-neoforge-1.8.12+mc1.21.1.jar' -ErrorAction Stop; Write-Host 'Iris NeoForge telecharge avec succes' -ForegroundColor Green } catch { Write-Host 'Erreur lors du telechargement de Iris: ' $_.Exception.Message -ForegroundColor Red }"
+
 
 REM Télécharger AutoModpack
 echo Telechargement de AutoModpack...
 powershell -Command "try { Invoke-WebRequest -Uri 'https://cdn.modrinth.com/data/k68glP2e/versions/OUWzgiPf/automodpack-mc1.21.1-neoforge-4.0.0-beta38.jar' -OutFile '%MINECRAFT_MODS%\automodpack-mc1.21.1-neoforge-4.0.0-beta38.jar' -ErrorAction Stop; Write-Host 'AutoModpack telecharge avec succes' -ForegroundColor Green } catch { Write-Host 'Erreur lors du telechargement de AutoModpack: ' $_.Exception.Message -ForegroundColor Red }"
 
 REM Télécharger le shader pack BSL si l'utilisateur a choisi les shaders
-if /i "!shaderChoice!" equ "o" (
-    echo.
-    echo Telechargement du shader pack BSL v10.0...
-    powershell -Command "try { Invoke-WebRequest -Uri 'https://cdn.modrinth.com/data/Q1vvjJYV/versions/jRn8y2VF/BSL_v10.0.zip' -OutFile '%MINECRAFT_SHADERPACKS%\BSL_v10.0.zip' -ErrorAction Stop; Write-Host 'Shader pack BSL v10.0 telecharge avec succes' -ForegroundColor Green } catch { Write-Host 'Erreur lors du telechargement du shader BSL: ' $_.Exception.Message -ForegroundColor Red }"
-)
+
+echo.
+echo Telechargement du shader pack BSL v10.0...
+powershell -Command "try { Invoke-WebRequest -Uri 'https://cdn.modrinth.com/data/Q1vvjJYV/versions/jRn8y2VF/BSL_v10.0.zip' -OutFile '%MINECRAFT_SHADERPACKS%\BSL_v10.0.zip' -ErrorAction Stop; Write-Host 'Shader pack BSL v10.0 telecharge avec succes' -ForegroundColor Green } catch { Write-Host 'Erreur lors du telechargement du shader BSL: ' $_.Exception.Message -ForegroundColor Red }"
 
 echo.
 echo ========================================

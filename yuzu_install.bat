@@ -15,7 +15,18 @@ REM Télécharger les fichiers zip depuis GitHub
 powershell -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/JRII972/minecraft-installer/main/yuzu-windows-msvc-20240304-537296095.zip' -OutFile '%TEMP_DIR%\yuzu.zip'"
 powershell -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/JRII972/minecraft-installer/main/ProdKeys.net-v20.0.1.zip' -OutFile '%TEMP_DIR%\prodkey.zip'"
 powershell -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/JRII972/minecraft-installer/main/config.zip' -OutFile '%TEMP_DIR%\config.zip'"
-powershell -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/JRII972/minecraft-installer/main/game.zip' -OutFile '%TEMP_DIR%\game.zip'"
+
+REM Demander à l'utilisateur de télécharger game.zip depuis OneDrive
+set "ONEDRIVE_GAME_URL=https://onedrive.live.com/download?cid=VOTRE_CID&resid=VOTRE_RESID"
+echo Veuillez télécharger le fichier game.zip depuis le lien suivant et le placer dans votre dossier Téléchargements :
+echo %ONEDRIVE_GAME_URL%
+start "" "%ONEDRIVE_GAME_URL%"
+pause
+
+
+REM Définir le chemin du game.zip dans Téléchargements
+set "USER_DOWNLOADS=%USERPROFILE%\Downloads"
+set "GAME_ZIP_PATH=%USER_DOWNLOADS%\game.zip"
 
 REM Extraire Yuzu dans C:\Yuzu
 if not exist "%YUZU_DIR%" mkdir "%YUZU_DIR%"
@@ -29,10 +40,10 @@ REM Extraire et copier config.zip dans %appdata%\yuzu\config
 if not exist "%CONFIG_DIR%" mkdir "%CONFIG_DIR%"
 powershell -Command "Expand-Archive -Path '%TEMP_DIR%\config.zip' -DestinationPath '%CONFIG_DIR%' -Force"
 
-REM Extraire game.zip dans C:\Yuzu\game
-if exist "%TEMP_DIR%\game.zip" (
+REM Extraire game.zip depuis Téléchargements dans C:\Yuzu\game
+if exist "%GAME_ZIP_PATH%" (
     if not exist "%GAME_DIR%" mkdir "%GAME_DIR%"
-    powershell -Command "Expand-Archive -Path '%TEMP_DIR%\game.zip' -DestinationPath '%GAME_DIR%' -Force"
+    powershell -Command "Expand-Archive -Path '%GAME_ZIP_PATH%' -DestinationPath '%GAME_DIR%' -Force"
 )
 
 REM Supprimer les fichiers temporaires

@@ -47,16 +47,16 @@ if not exist "%CONFIG_DIR%" mkdir "%CONFIG_DIR%"
 powershell -Command "Expand-Archive -Path '%TEMP_DIR%\config.zip' -DestinationPath '%CONFIG_DIR%' -Force"
 
 REM Extraire game.zip depuis Téléchargements dans C:\Yuzu\game
-echo Selectionnez le fichier game.zip.
-powershell -Command "$ofd = New-Object -ComObject Microsoft.Win32.OpenFileDialog; $ofd.Filter = 'ZIP Files (*.zip)|*.zip'; $ofd.Title = 'Sélectionnez le fichier game.zip'; if($ofd.ShowDialog() -eq $true) { Write-Output $ofd.FileName }" > "%TEMP_DIR%\selected_game_zip.txt"
-set /p GAME_ZIP_PATH=<"%TEMP_DIR%\selected_game_zip.txt"
-if exist "%GAME_ZIP_PATH%" (
-    if not exist "%GAME_DIR%" mkdir "%GAME_DIR%"
-    powershell -Command "Expand-Archive -Path '%GAME_ZIP_PATH%' -DestinationPath '%GAME_DIR%' -Force"
-) else (
-	echo Extrait le contenu du fichier jeu dans le dossier  C:\Yuzu\game
-	start "" "C:\Yuzu"
-)
+echo Sélectionnez le fichier game.zip à extraire dans C:\Yuzu\game.
+
+REM Créer le dossier des jeux si nécessaire
+if not exist "%GAME_DIR%" mkdir "%GAME_DIR%"
+
+REM Utiliser PowerShell pour sélectionner et extraire directement le fichier
+powershell -Command "Add-Type -AssemblyName System.Windows.Forms; $ofd = New-Object System.Windows.Forms.OpenFileDialog; $ofd.InitialDirectory = [Environment]::GetFolderPath('Downloads'); $ofd.Filter = 'ZIP Files (*.zip)|*.zip'; $ofd.Title = 'Sélectionnez le fichier game.zip'; if ($ofd.ShowDialog() -eq 'OK') { Write-Host ('Extraction de ' + $ofd.FileName + ' vers %GAME_DIR%...'); Expand-Archive -Path $ofd.FileName -DestinationPath '%GAME_DIR%' -Force; Write-Host 'Extraction terminée!' } else { Write-Host 'Aucun fichier sélectionné.' }"
+
+REM Ouvrir le dossier des jeux pour vérification
+start "" "%GAME_DIR%"
 
 REM Supprimer les fichiers temporaires
 rd /s /q "%TEMP_DIR%"

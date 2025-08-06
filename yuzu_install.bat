@@ -4,8 +4,6 @@ set "TEMP_DIR=%TEMP%\yuzu_installer_temp"
 set "YUZU_DIR=C:\Yuzu"
 set "APPDATA_YUZU=%APPDATA%\yuzu"
 set "KEYS_DIR=%APPDATA_YUZU%\keys"
-set "CONFIG_DIR=%APPDATA_YUZU%"
-set "GAME_DIR=%YUZU_DIR%\game"
 set "GAME_ZIP_PATH=%USERPROFILE%\Downloads\games.zip"
 set "SHORTCUT_PATH=%USERPROFILE%\Desktop\Yuzu.lnk"
 set "YUZU_EXE=%YUZU_DIR%\yuzu.exe"
@@ -43,20 +41,20 @@ if not exist "%KEYS_DIR%" mkdir "%KEYS_DIR%"
 powershell -Command "Expand-Archive -Path '%TEMP_DIR%\prodkey.zip' -DestinationPath '%KEYS_DIR%' -Force"
 
 REM Extraire et copier config.zip dans %appdata%\yuzu\config
-if not exist "%CONFIG_DIR%" mkdir "%CONFIG_DIR%"
-powershell -Command "Expand-Archive -Path '%TEMP_DIR%\config.zip' -DestinationPath '%CONFIG_DIR%' -Force"
+if not exist "%APPDATA_YUZU%" mkdir "%APPDATA_YUZU%"
+powershell -Command "Expand-Archive -Path '%TEMP_DIR%\config.zip' -DestinationPath '%APPDATA_YUZU%' -Force"
 
 REM Extraire game.zip depuis Téléchargements dans C:\Yuzu\game
 echo Sélectionnez le fichier game.zip à extraire dans C:\Yuzu\game.
 
 REM Créer le dossier des jeux si nécessaire
-if not exist "%GAME_DIR%" mkdir "%GAME_DIR%"
+if not exist "%YUZU_DIR%" mkdir "%YUZU_DIR%"
 
 REM Utiliser PowerShell pour sélectionner et extraire directement le fichier
-powershell -Command "Add-Type -AssemblyName System.Windows.Forms; $ofd = New-Object System.Windows.Forms.OpenFileDialog; $ofd.InitialDirectory = [Environment]::GetFolderPath('Downloads'); $ofd.Filter = 'ZIP Files (*.zip)|*.zip'; $ofd.Title = 'Sélectionnez le fichier game.zip'; if ($ofd.ShowDialog() -eq 'OK') { Write-Host ('Extraction de ' + $ofd.FileName + ' vers %GAME_DIR%...'); Expand-Archive -Path $ofd.FileName -DestinationPath '%GAME_DIR%' -Force; Write-Host 'Extraction terminée!' } else { Write-Host 'Aucun fichier sélectionné.' }"
+powershell -Command "Add-Type -AssemblyName System.Windows.Forms; $ofd = New-Object System.Windows.Forms.OpenFileDialog; $ofd.Filter = 'ZIP Files (*.zip)|*.zip'; $ofd.Title = 'Sélectionnez le fichier game.zip'; if ($ofd.ShowDialog() -eq 'OK') { Write-Host ('Extraction de ' + $ofd.FileName + ' vers %YUZU_DIR%...'); Expand-Archive -Path $ofd.FileName -DestinationPath '%YUZU_DIR%' -Force; Write-Host 'Extraction terminée!' } else { Write-Host 'Aucun fichier sélectionné.' }"
 
 REM Ouvrir le dossier des jeux pour vérification
-start "" "%GAME_DIR%"
+start "" "%YUZU_DIR%"
 
 REM Supprimer les fichiers temporaires
 rd /s /q "%TEMP_DIR%"
@@ -64,7 +62,7 @@ rd /s /q "%TEMP_DIR%"
 
 REM Créer un raccourci Yuzu sur le bureau
 if exist "%YUZU_EXE%" (
-    powershell -Command "$s=(New-Object -COM WScript.Shell).CreateShortcut('%SHORTCUT_PATH%');$s.TargetPath='%YUZU_EXE%';$s.Save()"
+    powershell -Command "$WshShell = New-Object -ComObject WScript.Shell; $Shortcut = $WshShell.CreateShortcut('%USERPROFILE%\Desktop\Yuzu.lnk'); $Shortcut.TargetPath = '%YUZU_EXE%'; $Shortcut.Save(); Write-Output 'Raccourci créé avec succès'"
     echo Un raccourci Yuzu a été créé sur le bureau.
 ) else (
     echo Attention : yuzu.exe introuvable dans %YUZU_DIR%. Le raccourci n'a pas été créé.

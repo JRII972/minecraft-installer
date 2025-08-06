@@ -4,29 +4,35 @@ set "TEMP_DIR=%TEMP%\yuzu_installer_temp"
 set "YUZU_DIR=C:\Yuzu"
 set "APPDATA_YUZU=%APPDATA%\yuzu"
 set "KEYS_DIR=%APPDATA_YUZU%\keys"
-set "CONFIG_DIR=%APPDATA_YUZU%\config"
+set "CONFIG_DIR=%APPDATA_YUZU%"
 set "GAME_DIR=%YUZU_DIR%\game"
+set "GAME_ZIP_PATH=%USERPROFILE%\Downloads\games.zip"
+set "SHORTCUT_PATH=%USERPROFILE%\Desktop\Yuzu.lnk"
+set "YUZU_EXE=%YUZU_DIR%\yuzu.exe"
 
 REM Créer le dossier temporaire
 if not exist "%TEMP_DIR%" mkdir "%TEMP_DIR%"
 
+REM Demander à l'utilisateur de télécharger game.zip depuis OneDrive
+set "ONEDRIVE_GAME_URL=https://1drv.ms/u/c/a4053beb9b5e1042/EQQUtT8AABJOvM8zHuRrYKMBrLvH0NfRJFUYwDa9-ROg8w?e=HyubUc"
+echo Veuillez télécharger le fichier game.zip depuis le lien suivant et le placer dans votre dossier Téléchargements :
+echo fait entre pour ouvrir
+pause
 
+echo %ONEDRIVE_GAME_URL%
+
+start "" "%ONEDRIVE_GAME_URL%"
+
+echo Téléchargements des autres fichier en attendant
 REM Télécharger les fichiers zip depuis GitHub
 powershell -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/JRII972/minecraft-installer/main/yuzu-windows-msvc-20240304-537296095.zip' -OutFile '%TEMP_DIR%\yuzu.zip'"
 powershell -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/JRII972/minecraft-installer/main/ProdKeys.net-v20.0.1.zip' -OutFile '%TEMP_DIR%\prodkey.zip'"
 powershell -Command "Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/JRII972/minecraft-installer/main/config.zip' -OutFile '%TEMP_DIR%\config.zip'"
 
-REM Demander à l'utilisateur de télécharger game.zip depuis OneDrive
-set "ONEDRIVE_GAME_URL=https://onedrive.live.com/download?cid=VOTRE_CID&resid=VOTRE_RESID"
-echo Veuillez télécharger le fichier game.zip depuis le lien suivant et le placer dans votre dossier Téléchargements :
-echo %ONEDRIVE_GAME_URL%
-start "" "%ONEDRIVE_GAME_URL%"
+echo Le téléchargement du fichier game est il fini ? (Entrer quand fini)
 pause
 
 
-REM Définir le chemin du game.zip dans Téléchargements
-set "USER_DOWNLOADS=%USERPROFILE%\Downloads"
-set "GAME_ZIP_PATH=%USER_DOWNLOADS%\game.zip"
 
 REM Extraire Yuzu dans C:\Yuzu
 if not exist "%YUZU_DIR%" mkdir "%YUZU_DIR%"
@@ -41,9 +47,15 @@ if not exist "%CONFIG_DIR%" mkdir "%CONFIG_DIR%"
 powershell -Command "Expand-Archive -Path '%TEMP_DIR%\config.zip' -DestinationPath '%CONFIG_DIR%' -Force"
 
 REM Extraire game.zip depuis Téléchargements dans C:\Yuzu\game
+echo Selectionnez le fichier game.zip.
+powershell -Command "$ofd = New-Object -ComObject Microsoft.Win32.OpenFileDialog; $ofd.Filter = 'ZIP Files (*.zip)|*.zip'; $ofd.Title = 'Sélectionnez le fichier game.zip'; if($ofd.ShowDialog() -eq $true) { Write-Output $ofd.FileName }" > "%TEMP_DIR%\selected_game_zip.txt"
+set /p GAME_ZIP_PATH=<"%TEMP_DIR%\selected_game_zip.txt"
 if exist "%GAME_ZIP_PATH%" (
     if not exist "%GAME_DIR%" mkdir "%GAME_DIR%"
     powershell -Command "Expand-Archive -Path '%GAME_ZIP_PATH%' -DestinationPath '%GAME_DIR%' -Force"
+) else (
+	echo Extrait le contenu du fichier jeu dans le dossier  C:\Yuzu\game
+	start "" "C:\Yuzu"
 )
 
 REM Supprimer les fichiers temporaires
@@ -51,8 +63,6 @@ rd /s /q "%TEMP_DIR%"
 
 
 REM Créer un raccourci Yuzu sur le bureau
-set "SHORTCUT_PATH=%USERPROFILE%\Desktop\Yuzu.lnk"
-set "YUZU_EXE=%YUZU_DIR%\yuzu.exe"
 if exist "%YUZU_EXE%" (
     powershell -Command "$s=(New-Object -COM WScript.Shell).CreateShortcut('%SHORTCUT_PATH%');$s.TargetPath='%YUZU_EXE%';$s.Save()"
     echo Un raccourci Yuzu a été créé sur le bureau.

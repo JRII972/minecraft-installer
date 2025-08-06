@@ -53,25 +53,20 @@ if not exist "%YUZU_DIR%" mkdir "%YUZU_DIR%"
 REM Utiliser PowerShell pour sélectionner et extraire directement le fichier
 powershell -Command "Add-Type -AssemblyName System.Windows.Forms; $ofd = New-Object System.Windows.Forms.OpenFileDialog; $ofd.Filter = 'ZIP Files (*.zip)|*.zip'; $ofd.Title = 'Sélectionnez le fichier game.zip'; if ($ofd.ShowDialog() -eq 'OK') { Write-Host ('Extraction de ' + $ofd.FileName + ' vers %YUZU_DIR%...'); Expand-Archive -Path $ofd.FileName -DestinationPath '%YUZU_DIR%' -Force; Write-Host 'Extraction terminée!' } else { Write-Host 'Aucun fichier sélectionné.' }"
 
-REM Ouvrir le dossier des jeux pour vérification
-start "" "%YUZU_DIR%"
+
 
 REM Supprimer les fichiers temporaires
 rd /s /q "%TEMP_DIR%"
 
 
 REM Créer un raccourci Yuzu sur le bureau
-if exist "%YUZU_EXE%" (
-    powershell -Command "$WshShell = New-Object -ComObject WScript.Shell; $Shortcut = $WshShell.CreateShortcut('%USERPROFILE%\Desktop\Yuzu.lnk'); $Shortcut.TargetPath = '%YUZU_EXE%'; $Shortcut.Save(); Write-Output 'Raccourci créé avec succès'"
-    echo Un raccourci Yuzu a été créé sur le bureau.
-) else (
-    echo Attention : yuzu.exe introuvable dans %YUZU_DIR%. Le raccourci n'a pas été créé.
-)
-
-echo Installation terminée !
-pause
 
 REM Lancer Yuzu
 if exist "%YUZU_EXE%" (
     start "Yuzu" "%YUZU_EXE%"
 )
+
+echo Installation terminée ! Il faut ouvrir le fichier yuzu.Exe
+REM Ouvrir le dossier des jeux pour vérification
+start "" "%YUZU_DIR%"
+pause
